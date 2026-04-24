@@ -81,3 +81,4 @@ memory/test_credentials.md
 # Mobile development
 android-sdk/webapp/node_modules/@cloudflare/workerd-linux-arm64/bin/workerd
 jdk-21/lib/modules
+webapp/node_modules/@cloudflare/workerd-linux-arm64/bin/workerd
