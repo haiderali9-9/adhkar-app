@@ -1,0 +1,11 @@
+node_modules
+dist
+.output
+.vinxi
+.git
+.gitignore
+*.log
+.DS_Store
+.env
+.env.*
+README.md

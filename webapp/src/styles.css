@@ -1,0 +1,194 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Adhkar app design system.
+ * Calming Islamic palette: deep emerald, warm beige, soft gold.
+ * Arabic-first typography. All colors in oklch.
+ */
+
+@layer base {
+  @font-face {
+    font-family: "Amiri";
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url("https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHpUrtLYS6pNLAjk.woff2") format("woff2");
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-glow: var(--primary-glow);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-arabic: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --shadow-soft: 0 4px 24px -8px color-mix(in oklab, var(--primary) 25%, transparent);
+  --shadow-glow: 0 0 40px color-mix(in oklab, var(--primary-glow) 35%, transparent);
+  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
+  --gradient-subtle: linear-gradient(180deg, color-mix(in oklab, var(--primary) 8%, var(--background)), var(--background));
+  --gradient-gold: linear-gradient(135deg, var(--gold), color-mix(in oklab, var(--gold) 70%, white));
+
+  --transition-smooth: 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Light mode — warm beige & emerald */
+:root {
+  --radius: 1rem;
+  --background: oklch(0.985 0.012 85);          /* warm cream */
+  --foreground: oklch(0.22 0.04 155);            /* deep forest */
+  --card: oklch(0.995 0.008 85);
+  --card-foreground: oklch(0.22 0.04 155);
+  --popover: oklch(0.995 0.008 85);
+  --popover-foreground: oklch(0.22 0.04 155);
+  --primary: oklch(0.42 0.09 160);               /* deep emerald */
+  --primary-foreground: oklch(0.98 0.01 85);
+  --primary-glow: oklch(0.58 0.12 158);
+  --secondary: oklch(0.94 0.02 85);              /* soft beige */
+  --secondary-foreground: oklch(0.28 0.05 155);
+  --muted: oklch(0.95 0.015 85);
+  --muted-foreground: oklch(0.5 0.03 150);
+  --accent: oklch(0.92 0.04 90);                 /* warm sand */
+  --accent-foreground: oklch(0.28 0.05 155);
+  --gold: oklch(0.78 0.13 80);                   /* soft gold */
+  --gold-foreground: oklch(0.25 0.05 80);
+  --destructive: oklch(0.55 0.18 25);
+  --destructive-foreground: oklch(0.98 0.01 85);
+  --border: oklch(0.9 0.02 90);
+  --input: oklch(0.92 0.02 90);
+  --ring: oklch(0.42 0.09 160);
+}
+
+/* Dark mode — calming night */
+.dark {
+  --background: oklch(0.18 0.02 160);            /* deep night green */
+  --foreground: oklch(0.95 0.015 85);
+  --card: oklch(0.22 0.025 160);
+  --card-foreground: oklch(0.95 0.015 85);
+  --popover: oklch(0.22 0.025 160);
+  --popover-foreground: oklch(0.95 0.015 85);
+  --primary: oklch(0.62 0.13 158);               /* luminous emerald */
+  --primary-foreground: oklch(0.15 0.02 160);
+  --primary-glow: oklch(0.72 0.14 158);
+  --secondary: oklch(0.27 0.03 160);
+  --secondary-foreground: oklch(0.95 0.015 85);
+  --muted: oklch(0.26 0.025 160);
+  --muted-foreground: oklch(0.72 0.02 90);
+  --accent: oklch(0.3 0.04 160);
+  --accent-foreground: oklch(0.95 0.015 85);
+  --gold: oklch(0.82 0.13 80);
+  --gold-foreground: oklch(0.2 0.03 80);
+  --destructive: oklch(0.62 0.2 25);
+  --destructive-foreground: oklch(0.98 0.01 85);
+  --border: oklch(0.32 0.025 160);
+  --input: oklch(0.3 0.025 160);
+  --ring: oklch(0.62 0.13 158);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--gradient-subtle);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+  }
+
+  .arabic {
+    font-family: var(--font-arabic);
+    direction: rtl;
+    line-height: 2.2;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  .gradient-gold {
+    background: var(--gradient-gold);
+  }
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  .transition-smooth {
+    transition: all var(--transition-smooth);
+  }
+}
+
+/* Counter pulse animation */
+@keyframes count-pulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+.animate-count {
+  animation: count-pulse 300ms ease-out;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Decorative Islamic-style border element */
+.divider-ornament {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-gold);
+}
+.divider-ornament::before,
+.divider-ornament::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  opacity: 0.5;
+}
