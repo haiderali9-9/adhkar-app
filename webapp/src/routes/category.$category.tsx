@@ -5,9 +5,11 @@ import { AdhkarCard } from "@/components/AdhkarCard";
 import {
   adhkarData,
   categoryMeta,
+  getAdhkarForCategory,
+  type Adhkar,
   type AdhkarCategory,
 } from "@/data/adhkar";
-import { getTodayCounts } from "@/lib/storage";
+import { getTodayCounts, getCustomAdhkar } from "@/lib/storage";
 
 const validCategories = new Set(Object.keys(categoryMeta));
 
@@ -43,10 +45,15 @@ function CategoryPage() {
   const { category } = useParams({ from: "/category/$category" });
   const [tick, setTick] = useState(0);
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [items, setItems] = useState<Adhkar[]>([]);
 
   useEffect(() => {
     setCounts(getTodayCounts());
-  }, [tick]);
+    if (validCategories.has(category)) {
+      const cat = category as AdhkarCategory;
+      setItems(getAdhkarForCategory(cat, getCustomAdhkar()));
+    }
+  }, [tick, category]);
 
   if (!validCategories.has(category)) {
     return (
@@ -61,9 +68,8 @@ function CategoryPage() {
 
   const cat = category as AdhkarCategory;
   const meta = categoryMeta[cat];
-  const items = adhkarData[cat];
   const completed = items.filter((a) => (counts[a.id] ?? 0) >= a.count).length;
-  const pct = Math.round((completed / items.length) * 100);
+  const pct = items.length > 0 ? Math.round((completed / items.length) * 100) : 0;
 
   return (
     <div>

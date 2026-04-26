@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { AdhkarCard } from "@/components/AdhkarCard";
 import { adhkarData, type Adhkar } from "@/data/adhkar";
-import { getFavorites } from "@/lib/storage";
+import { getFavorites, getCustomAdhkar } from "@/lib/storage";
 import { PageHeader } from "@/components/AppShell";
 
 export const Route = createFileRoute("/favorites")({
@@ -35,6 +35,10 @@ function FavoritesPage() {
       for (const item of list) {
         if (ids.has(item.id)) all.push(item);
       }
+    }
+    // Include custom adhkar too
+    for (const item of getCustomAdhkar()) {
+      if (ids.has(item.id)) all.push(item);
     }
     setFavs(all);
   }, [tick]);

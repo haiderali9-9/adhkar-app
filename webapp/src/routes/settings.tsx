@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Moon, Sun, BellRing, Sunrise, Sunset, Bed, MoonStar } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Moon, Sun, BellRing, Sunrise, Sunset, Bed, MoonStar, Download, Upload, Database } from "lucide-react";
 import { PageHeader } from "@/components/AppShell";
 import {
   getTheme,
   setTheme,
   getReminders,
   setReminders,
+  downloadBackup,
+  importBackup,
   type Reminders,
   type Theme,
 } from "@/lib/storage";
@@ -37,6 +39,8 @@ function SettingsPage() {
   const [permission, setPermission] = useState<NotificationPermission | "unsupported">(
     "default"
   );
+  const [importMsg, setImportMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setThemeState(getTheme());
@@ -57,6 +61,29 @@ function SettingsPage() {
     if (!("Notification" in window)) return;
     const p = await Notification.requestPermission();
     setPermission(p);
+  };
+
+  const handleExport = () => {
+    downloadBackup();
+    setImportMsg({ ok: true, text: "Backup file downloaded." });
+    setTimeout(() => setImportMsg(null), 3500);
+  };
+
+  const handleImportClick = () => fileRef.current?.click();
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const result = importBackup(text, { merge: true });
+    setImportMsg({ ok: result.ok, text: result.message });
+    if (result.ok) {
+      // Refresh state after import
+      setThemeState(getTheme());
+      setR(getReminders());
+    }
+    if (fileRef.current) fileRef.current.value = "";
+    setTimeout(() => setImportMsg(null), 5000);
   };
 
   if (!r) return null;
@@ -176,6 +203,62 @@ function SettingsPage() {
                 updateReminders({ ...r, sleep: { ...r.sleep, time: t } })
               }
             />
+          </div>
+        </Section>
+
+        {/* Backup & Restore */}
+        <Section title="Backup & Restore">
+          <div className="space-y-2">
+            <div className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Database className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">
+                  Save your data
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Export custom adhkar, favorites, streaks & settings to a JSON
+                  file. Import it on another phone to restore everything.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    data-testid="export-backup-btn"
+                    onClick={handleExport}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-soft transition-smooth hover:shadow-glow"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Export backup
+                  </button>
+                  <button
+                    data-testid="import-backup-btn"
+                    onClick={handleImportClick}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3.5 py-2 text-xs font-semibold text-foreground transition-smooth hover:bg-muted"
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    Import backup
+                  </button>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="application/json,.json"
+                    onChange={handleFile}
+                    className="hidden"
+                    data-testid="import-file-input"
+                  />
+                </div>
+                {importMsg && (
+                  <p
+                    className={cn(
+                      "mt-2 text-xs",
+                      importMsg.ok ? "text-primary" : "text-destructive"
+                    )}
+                  >
+                    {importMsg.text}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </Section>
 

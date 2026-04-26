@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as CustomRouteImport } from './routes/custom'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
 
@@ -22,6 +23,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const FavoritesRoute = FavoritesRouteImport.update({
   id: '/favorites',
   path: '/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomRoute = CustomRouteImport.update({
+  id: '/custom',
+  path: '/custom',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const CategoryCategoryRoute = CategoryCategoryRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/custom': typeof CustomRoute
   '/favorites': typeof FavoritesRoute
   '/settings': typeof SettingsRoute
   '/category/$category': typeof CategoryCategoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/custom': typeof CustomRoute
   '/favorites': typeof FavoritesRoute
   '/settings': typeof SettingsRoute
   '/category/$category': typeof CategoryCategoryRoute
@@ -50,20 +58,33 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/custom': typeof CustomRoute
   '/favorites': typeof FavoritesRoute
   '/settings': typeof SettingsRoute
   '/category/$category': typeof CategoryCategoryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/favorites' | '/settings' | '/category/$category'
+  fullPaths:
+    | '/'
+    | '/custom'
+    | '/favorites'
+    | '/settings'
+    | '/category/$category'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/favorites' | '/settings' | '/category/$category'
-  id: '__root__' | '/' | '/favorites' | '/settings' | '/category/$category'
+  to: '/' | '/custom' | '/favorites' | '/settings' | '/category/$category'
+  id:
+    | '__root__'
+    | '/'
+    | '/custom'
+    | '/favorites'
+    | '/settings'
+    | '/category/$category'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CustomRoute: typeof CustomRoute
   FavoritesRoute: typeof FavoritesRoute
   SettingsRoute: typeof SettingsRoute
   CategoryCategoryRoute: typeof CategoryCategoryRoute
@@ -85,6 +106,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/custom': {
+      id: '/custom'
+      path: '/custom'
+      fullPath: '/custom'
+      preLoaderRoute: typeof CustomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +132,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CustomRoute: CustomRoute,
   FavoritesRoute: FavoritesRoute,
   SettingsRoute: SettingsRoute,
   CategoryCategoryRoute: CategoryCategoryRoute,

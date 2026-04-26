@@ -36,7 +36,9 @@ function HomePage() {
     setStreak({ current: s.current, longest: s.longest });
   }, []);
 
-  const categories = Object.keys(categoryMeta) as AdhkarCategory[];
+  const categories = (Object.keys(categoryMeta) as AdhkarCategory[]).filter(
+    (c) => c !== "custom"
+  );
   const greeting = (() => {
     const h = new Date().getHours();
     if (h < 12) return "Good morning";

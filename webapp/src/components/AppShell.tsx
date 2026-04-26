@@ -1,9 +1,10 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Heart, Settings, Sparkles } from "lucide-react";
+import { Home, Heart, Settings, Sparkles, BookmarkPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { to: "/", label: "Home", icon: Home },
+  { to: "/custom", label: "My Adhkar", icon: BookmarkPlus },
   { to: "/favorites", label: "Favorites", icon: Heart },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
@@ -13,11 +14,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col">
-      <main className="flex-1 pb-24">{children}</main>
+      <main
+        className="flex-1"
+        style={{ paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))" }}
+      >
+        {children}
+      </main>
 
-      {/* Bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex justify-center pointer-events-none">
-        <div className="pointer-events-auto mx-3 mb-3 flex w-full max-w-md items-center justify-around rounded-3xl border border-border/60 bg-card/85 px-2 py-2 shadow-soft backdrop-blur-xl">
+      {/* Bottom nav — sticks above Android nav-bar / iOS home indicator via safe-area-inset */}
+      <nav
+        className="fixed inset-x-0 bottom-0 z-40 flex justify-center pointer-events-none"
+        style={{
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 8px)",
+          paddingLeft: "env(safe-area-inset-left, 0px)",
+          paddingRight: "env(safe-area-inset-right, 0px)",
+        }}
+      >
+        <div className="pointer-events-auto mx-3 flex w-full max-w-md items-center justify-around rounded-3xl border border-border/60 bg-card/95 px-1.5 py-1.5 shadow-soft backdrop-blur-xl">
           {navItems.map((item) => {
             const active =
               item.to === "/"
@@ -29,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "group relative flex flex-1 flex-col items-center gap-1 rounded-2xl px-3 py-2 transition-smooth",
+                  "group relative flex flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-1 py-2 transition-smooth min-h-[52px]",
                   active
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -42,7 +55,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   )}
                   strokeWidth={active ? 2.4 : 1.8}
                 />
-                <span className="text-[10px] font-medium tracking-wide">
+                <span className="text-[10px] font-medium tracking-tight leading-none">
                   {item.label}
                 </span>
                 {active && (
@@ -69,7 +82,10 @@ export function PageHeader({
   back?: { to: string; label?: string };
 }) {
   return (
-    <header className="px-5 pt-8 pb-4">
+    <header
+      className="px-5 pb-4"
+      style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 32px)" }}
+    >
       {back && (
         <Link
           to={back.to}

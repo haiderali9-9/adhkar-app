@@ -1,4 +1,4 @@
-export type AdhkarCategory = "morning" | "evening" | "after-salah" | "sleep" | "general";
+export type AdhkarCategory = "morning" | "evening" | "after-salah" | "sleep" | "general" | "custom";
 
 export type Adhkar = {
   id: string;
@@ -42,6 +42,12 @@ export const categoryMeta: Record<
     title: "General Dhikr",
     arabicTitle: "الأذكار العامة",
     description: "Continuous remembrance",
+    icon: "sparkles",
+  },
+  custom: {
+    title: "My Adhkar",
+    arabicTitle: "أذكاري",
+    description: "Your personal adhkar",
     icon: "sparkles",
   },
 };
@@ -317,4 +323,18 @@ export const adhkarData: Record<AdhkarCategory, Adhkar[]> = {
       important: true,
     },
   ],
+  custom: [],
 };
+
+// Get all adhkar (built-in + custom) for a category
+export function getAdhkarForCategory(
+  category: AdhkarCategory,
+  customList: Adhkar[]
+): Adhkar[] {
+  const builtIn = adhkarData[category] ?? [];
+  const customForCat = customList.filter(
+    (a: Adhkar & { category?: string }) => a.category === category
+  );
+  return [...builtIn, ...customForCat];
+}
+
