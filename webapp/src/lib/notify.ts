@@ -99,6 +99,19 @@ export async function scheduleReminders(reminders: Reminders): Promise<{
   mode: "native" | "web";
 }> {
   if (isNative()) {
+    // Create our custom channel first (idempotent)
+    try {
+      await LocalNotifications.createChannel({
+        id: "sakeenah-reminders",
+        name: "Adhkar reminders",
+        description: "Daily adhkar and prayer reminders",
+        importance: 4,
+        sound: "sakeenah_chime",
+        vibration: true,
+      });
+    } catch {
+      // ignore on platforms that don't support channels
+    }
     // Cancel previously scheduled
     try {
       const pending = await LocalNotifications.getPending();
@@ -128,7 +141,8 @@ export async function scheduleReminders(reminders: Reminders): Promise<{
           allowWhileIdle: true,
         },
         smallIcon: "ic_launcher_foreground",
-        sound: undefined,
+        sound: "sakeenah_chime",
+        channelId: "sakeenah-reminders",
       });
     });
 
@@ -176,6 +190,19 @@ let webTimers: number[] = [];
 export async function sendTestNotification(): Promise<boolean> {
   if (isNative()) {
     try {
+      // Make sure the channel exists with our custom chime
+      try {
+        await LocalNotifications.createChannel({
+          id: "sakeenah-reminders",
+          name: "Adhkar reminders",
+          description: "Daily adhkar and prayer reminders",
+          importance: 4,
+          sound: "sakeenah_chime",
+          vibration: true,
+        });
+      } catch {
+        // ignore if not supported
+      }
       await LocalNotifications.schedule({
         notifications: [
           {
@@ -184,6 +211,8 @@ export async function sendTestNotification(): Promise<boolean> {
             body: "Notifications are working — Alhamdulillah!",
             schedule: { at: new Date(Date.now() + 1500) },
             smallIcon: "ic_launcher_foreground",
+            sound: "sakeenah_chime",
+            channelId: "sakeenah-reminders",
           },
         ],
       });

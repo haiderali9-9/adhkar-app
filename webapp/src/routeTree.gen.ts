@@ -13,6 +13,7 @@ import { Route as TasbihRouteImport } from './routes/tasbih'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as QuranRouteImport } from './routes/quran'
+import { Route as PrayerTimesRouteImport } from './routes/prayer-times'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CustomRouteImport } from './routes/custom'
 import { Route as IndexRouteImport } from './routes/index'
@@ -36,6 +37,11 @@ const SearchRoute = SearchRouteImport.update({
 const QuranRoute = QuranRouteImport.update({
   id: '/quran',
   path: '/quran',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrayerTimesRoute = PrayerTimesRouteImport.update({
+  id: '/prayer-times',
+  path: '/prayer-times',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/custom': typeof CustomRoute
   '/favorites': typeof FavoritesRoute
+  '/prayer-times': typeof PrayerTimesRoute
   '/quran': typeof QuranRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/custom': typeof CustomRoute
   '/favorites': typeof FavoritesRoute
+  '/prayer-times': typeof PrayerTimesRoute
   '/quran': typeof QuranRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/custom': typeof CustomRoute
   '/favorites': typeof FavoritesRoute
+  '/prayer-times': typeof PrayerTimesRoute
   '/quran': typeof QuranRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/custom'
     | '/favorites'
+    | '/prayer-times'
     | '/quran'
     | '/search'
     | '/settings'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/custom'
     | '/favorites'
+    | '/prayer-times'
     | '/quran'
     | '/search'
     | '/settings'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/custom'
     | '/favorites'
+    | '/prayer-times'
     | '/quran'
     | '/search'
     | '/settings'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CustomRoute: typeof CustomRoute
   FavoritesRoute: typeof FavoritesRoute
+  PrayerTimesRoute: typeof PrayerTimesRoute
   QuranRoute: typeof QuranRoute
   SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
@@ -164,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuranRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/prayer-times': {
+      id: '/prayer-times'
+      path: '/prayer-times'
+      fullPath: '/prayer-times'
+      preLoaderRoute: typeof PrayerTimesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/favorites': {
       id: '/favorites'
       path: '/favorites'
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CustomRoute: CustomRoute,
   FavoritesRoute: FavoritesRoute,
+  PrayerTimesRoute: PrayerTimesRoute,
   QuranRoute: QuranRoute,
   SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
