@@ -11,6 +11,7 @@ import {
   recordActivity,
 } from "@/lib/storage";
 import { shareText } from "@/lib/share";
+import { celebrate } from "@/lib/celebrate";
 
 export function AdhkarCard({
   adhkar,
@@ -40,6 +41,9 @@ export function AdhkarCard({
     setPulse(true);
     setTimeout(() => setPulse(false), 320);
     if (next > 0) recordActivity();
+    if (next >= adhkar.count) {
+      celebrate("Mashallah!");
+    }
     onChange?.();
   };
 

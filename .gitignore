@@ -82,3 +82,21 @@ memory/test_credentials.md
 android-sdk/webapp/node_modules/@cloudflare/workerd-linux-arm64/bin/workerd
 jdk-21/lib/modules
 webapp/node_modules/@cloudflare/workerd-linux-arm64/bin/workerd
+-e 
+# Environment and credential files
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
+-e 
+# Environment and credential files
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
