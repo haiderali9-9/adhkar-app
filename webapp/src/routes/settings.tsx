@@ -13,6 +13,13 @@ import {
   type Theme,
 } from "@/lib/storage";
 import { cn } from "@/lib/utils";
+import {
+  getNotificationStatus,
+  requestNotificationPermission,
+  scheduleReminders,
+  sendTestNotification,
+  isNative,
+} from "@/lib/notify";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -36,31 +43,56 @@ export const Route = createFileRoute("/settings")({
 function SettingsPage() {
   const [theme, setThemeState] = useState<Theme>("dark");
   const [r, setR] = useState<Reminders | null>(null);
-  const [permission, setPermission] = useState<NotificationPermission | "unsupported">(
-    "default"
-  );
+  const [permission, setPermission] = useState<
+    "granted" | "denied" | "prompt" | "unsupported" | "default"
+  >("default");
   const [importMsg, setImportMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [notifyMsg, setNotifyMsg] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setThemeState(getTheme());
     setR(getReminders());
-    if (typeof window !== "undefined" && "Notification" in window) {
-      setPermission(Notification.permission);
-    } else {
-      setPermission("unsupported");
-    }
+    getNotificationStatus().then((p) => setPermission(p));
   }, []);
 
   const updateReminders = (next: Reminders) => {
     setR(next);
     setReminders(next);
+    // Reschedule notifications whenever reminders change (only if granted)
+    getNotificationStatus().then((p) => {
+      if (p === "granted") scheduleReminders(next);
+    });
   };
 
   const requestNotify = async () => {
-    if (!("Notification" in window)) return;
-    const p = await Notification.requestPermission();
+    const p = await requestNotificationPermission();
     setPermission(p);
+    if (p === "granted") {
+      const reminders = getReminders();
+      const result = await scheduleReminders(reminders);
+      setNotifyMsg(
+        result.mode === "native"
+          ? `Scheduled ${result.scheduled} daily notification${result.scheduled === 1 ? "" : "s"} ✓`
+          : "Web notifications enabled (only fire while app is open)"
+      );
+      setTimeout(() => setNotifyMsg(null), 4000);
+    } else if (p === "denied") {
+      setNotifyMsg(
+        "Permission denied. Enable notifications for Sakeenah in your phone settings."
+      );
+      setTimeout(() => setNotifyMsg(null), 5000);
+    }
+  };
+
+  const testNotify = async () => {
+    const ok = await sendTestNotification();
+    setNotifyMsg(
+      ok
+        ? "Test notification sent — check your notification tray"
+        : "Could not send. Please grant permission first."
+    );
+    setTimeout(() => setNotifyMsg(null), 4000);
   };
 
   const handleExport = () => {
@@ -129,23 +161,45 @@ function SettingsPage() {
                 <BellRing className="h-5 w-5" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Browser notifications</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium">
+                    {isNative() ? "Android notifications" : "Browser notifications"}
+                  </p>
+                  <StatusBadge status={permission} />
+                </div>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {permission === "granted"
-                    ? "Enabled — you'll receive gentle reminders."
+                    ? isNative()
+                      ? "Enabled — daily reminders will fire even when the app is closed."
+                      : "Enabled — reminders fire while the app is open."
                     : permission === "denied"
-                    ? "Blocked. Update your browser permissions to enable."
+                    ? "Permission was blocked. Open Android Settings → Apps → Sakeenah → Notifications to enable."
                     : permission === "unsupported"
                     ? "Not supported on this device."
-                    : "Allow notifications to receive reminders."}
+                    : "Allow notifications to receive your daily adhkar reminders."}
                 </p>
-                {permission === "default" && (
-                  <button
-                    onClick={requestNotify}
-                    className="mt-3 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft transition-smooth hover:shadow-glow"
-                  >
-                    Enable notifications
-                  </button>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {permission !== "granted" && permission !== "unsupported" && (
+                    <button
+                      data-testid="enable-notifications-btn"
+                      onClick={requestNotify}
+                      className="rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft transition-smooth hover:shadow-glow"
+                    >
+                      Enable notifications
+                    </button>
+                  )}
+                  {permission === "granted" && (
+                    <button
+                      data-testid="test-notification-btn"
+                      onClick={testNotify}
+                      className="rounded-xl border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground transition-smooth hover:bg-muted"
+                    >
+                      Send test notification
+                    </button>
+                  )}
+                </div>
+                {notifyMsg && (
+                  <p className="mt-2 text-xs text-primary">{notifyMsg}</p>
                 )}
               </div>
             </div>
@@ -384,5 +438,28 @@ function Switch({
         )}
       />
     </button>
+  );
+}
+
+
+function StatusBadge({
+  status,
+}: {
+  status: "granted" | "denied" | "prompt" | "unsupported" | "default";
+}) {
+  const map: Record<string, { label: string; cls: string }> = {
+    granted: { label: "On", cls: "bg-primary/15 text-primary" },
+    denied: { label: "Blocked", cls: "bg-destructive/15 text-destructive" },
+    prompt: { label: "Off", cls: "bg-muted text-muted-foreground" },
+    default: { label: "Off", cls: "bg-muted text-muted-foreground" },
+    unsupported: { label: "N/A", cls: "bg-muted text-muted-foreground" },
+  };
+  const { label, cls } = map[status];
+  return (
+    <span
+      className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", cls)}
+    >
+      {label}
+    </span>
   );
 }

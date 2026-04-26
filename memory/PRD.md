@@ -1,31 +1,37 @@
-# Sakeenah Adhkar — APK v3 (Search · Share · Quran · Tasbih)
+# Sakeenah Adhkar — APK v4 (Native Notifications · Full Quran · Custom Icon · Celebration)
 
 ## Summary
-Web app `peaceful-remembrance-main` (TanStack Start SSR) → converted to Vite SPA → wrapped with Capacitor → real Android APK. v3 adds the 4 bonus features the user asked for.
+Web app `peaceful-remembrance-main` (TanStack Start SSR) → converted to Vite SPA → wrapped with Capacitor → real Android APK. v4 addresses all 5 user-reported issues.
 
-## v3 changes (this iteration)
-- **Search** — new `/search` route. Searches Arabic, transliteration, translation & reference across all built-in + custom adhkar. Category label shown above each result. Empty / hint / no-match states.
-- **Share dhikr** — new share-icon button on every AdhkarCard (next to favorite heart). Uses Web Share API (works in Capacitor WebView on Android 12+) for native WhatsApp / Telegram / Messages share. Falls back to clipboard with toast notification when Share API not available. Same Share button on Quran detail.
-- **Quranic verses with audio** — new `/quran` route with 8 curated short surahs (Al-Fatiha, Al-Ikhlas, Al-Falaq, An-Nas, Al-Kafirun, Al-Kawthar, An-Nasr, Al-Asr). Each row has a play/pause button streaming Mishary Alafasy recitation from `server8.mp3quran.net`. Tap row to expand → full Arabic + English translation + Share button.
-- **Tasbih counter** — new `/tasbih` route. Big circular tap target with animated progress ring, presets (33/99/100), session count + lifetime total, haptic feedback toggle (uses `navigator.vibrate`), reset buttons. State persisted in localStorage.
-- **Home tiles** — added 3-column quick-access row above category list: Search · Quran · Tasbih.
-- **Share helper** — new `src/lib/share.ts` with cross-platform `shareText()` + lightweight toast.
+## v4 changes
+- **Native Android notifications**: Installed `@capacitor/local-notifications`. Added `requestNotificationPermission()`, `scheduleReminders()`, `sendTestNotification()` helpers. APK manifest now declares `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED`, `WAKE_LOCK`. Reminders are auto-scheduled on app launch (granted state) and rescheduled when reminder times change. "Enable notifications" button in Settings triggers the system permission dialog. "Send test notification" button verifies delivery. Notifications fire even when app is closed.
+- **Beautiful app icon**: Custom-generated PNG icons at all 5 densities (mdpi-xxxhdpi). Design: deep emerald rounded square with gold ring, gold crescent moon + cream star, three small cream prayer-bead dots underneath, soft glow. Adaptive icon + round icon variants included. Background colour: `#0D3A2A`.
+- **Completion animation**: New `src/lib/celebrate.ts` — pure DOM particle burst (26 sparkles in gold/cream/green) + scale-in "Mashallah!" toast + cheerful haptic vibration pattern. Triggers when an adhkar count reaches its target, and when the Tasbih reaches its preset (33/99/100).
+- **Full Quran with multi-language translations**: New `src/lib/quran-api.ts` using AlQuran.cloud free public API. All 114 surahs listed with search by name/number. Surah detail modal shows verse-by-verse Arabic + chosen translation + audio player. **12 translations across 8 languages, all public-domain or freely permitted**: English (Pickthall PD 1930, Yusuf Ali PD 1934, Saheeh Intl, Arberry 1955), Urdu (Jalandhry PD, Ahmed Ali), French (Hamidullah), Indonesian, Turkish (Diyanet), Spanish (Cortés), German (Abu Rida), Russian (Kuliev), Bengali. Translation choice persists in localStorage. Surah list & details cached locally for offline use after first load. Audio: Mishary Alafasy via mp3quran.net (charity).
 
 ## APK
 - **Download:** https://mobile-apk-gen-5.preview.emergentagent.com/api/download/apk
-- **Size:** 4.1 MB · debug · Min Android 6.0+ · App ID `com.sakeenah.adhkar`
+- **Size:** 4.4 MB · debug · Min Android 6.0+ · App ID `com.sakeenah.adhkar`
+- **Permissions declared:** INTERNET, RECEIVE_BOOT_COMPLETED, WAKE_LOCK, POST_NOTIFICATIONS
 
-## Verified flows
-- Search "Allah" → 26 results; "subhan" → no matches state ✅
-- Quran row tap expands; Arabic for Al-Ikhlas renders correctly; share button visible ✅
-- Tasbih: 5 taps → count=5, lifetime=5; preset switch resets count ✅
-- Share button on all dhikr cards triggers Web Share API ✅
+## Verified flows (Playwright on bundled web app)
+- Tap "Tap to count" on a 1-count adhkar → sparkle burst + "Mashallah!" toast + counter completes ✓
+- Settings shows "Browser/Android notifications" section with status badge + Enable / Test buttons ✓
+- Quran shows all 114 surahs with full metadata (Arabic name, English name, meaning, ayah count, Meccan/Medinan) ✓
+- Translation picker offers 12 entries across 8 languages, each labelled with licence status ✓
+- Selecting Urdu translation persists across surah opens ✓
+- APK manifest contains POST_NOTIFICATIONS permission ✓
+- Custom launcher icon embedded at all densities ✓
 
-## Files added/modified (v3)
-- `src/data/quran.ts` — NEW (8 surahs metadata + audio URLs)
-- `src/lib/share.ts` — NEW (cross-platform share + toast)
-- `src/routes/search.tsx` — NEW
-- `src/routes/quran.tsx` — NEW
-- `src/routes/tasbih.tsx` — NEW
-- `src/components/AdhkarCard.tsx` — added share button
-- `src/routes/index.tsx` — added quick-access tiles
+## Files added/modified (v4)
+- `src/lib/notify.ts` — NEW (Capacitor + Web fallback)
+- `src/lib/celebrate.ts` — NEW (sparkle + toast)
+- `src/lib/quran-api.ts` — NEW (AlQuran.cloud client + 12 translations)
+- `src/routes/quran.tsx` — fully rewritten (114 surahs, search, language picker, modal viewer, audio)
+- `src/routes/settings.tsx` — added native notification UI + status badge + test button
+- `src/routes/__root.tsx` — auto-schedules notifications on app load
+- `src/routes/tasbih.tsx` — celebrates when preset reached
+- `src/components/AdhkarCard.tsx` — celebrates when count target reached
+- `android/app/src/main/res/mipmap-*/ic_launcher*.png` — custom icon (5 densities)
+- `android/app/src/main/res/values/ic_launcher_background.xml` — adaptive icon bg
+- Capacitor `@capacitor/local-notifications@8.0.2` installed

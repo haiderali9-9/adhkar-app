@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 
 import { Onboarding } from "@/components/Onboarding";
 import { AppShell } from "@/components/AppShell";
-import { getTheme, setTheme, isOnboarded } from "@/lib/storage";
+import { getTheme, setTheme, isOnboarded, getReminders } from "@/lib/storage";
+import { getNotificationStatus, scheduleReminders } from "@/lib/notify";
 
 function NotFoundComponent() {
   return (
@@ -41,6 +42,12 @@ function RootComponent() {
     setTheme(t);
     setShowOnboarding(!isOnboarded());
     setReady(true);
+    // Re-schedule daily notifications when app launches (Android can clear them)
+    getNotificationStatus().then((p) => {
+      if (p === "granted") {
+        scheduleReminders(getReminders()).catch(() => undefined);
+      }
+    });
   }, []);
 
   if (!ready) {

@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, RotateCcw, Vibrate } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { celebrate } from "@/lib/celebrate";
 
 export const Route = createFileRoute("/tasbih")({
   component: TasbihPage,
@@ -51,6 +52,9 @@ function TasbihPage() {
         } catch {
           // ignore
         }
+      }
+      if (reachedTarget) {
+        celebrate(`${s.target} ✦ Mashallah!`);
       }
       return {
         ...s,
