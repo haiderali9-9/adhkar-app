@@ -1,46 +1,31 @@
-# Sakeenah Adhkar — APK v2 (Custom adhkar + Backup/Restore)
+# Sakeenah Adhkar — APK v3 (Search · Share · Quran · Tasbih)
 
 ## Summary
-Web app `peaceful-remembrance-main` was converted from TanStack Start SSR → plain Vite SPA → wrapped with Capacitor → built into a real Android APK. v2 adds custom adhkar CRUD, backup/restore, and a fixed bottom nav bar.
+Web app `peaceful-remembrance-main` (TanStack Start SSR) → converted to Vite SPA → wrapped with Capacitor → real Android APK. v3 adds the 4 bonus features the user asked for.
 
-## v2 changes (this iteration)
-- **Custom adhkar (full CRUD)**: New `/custom` route ("My Adhkar" tab) with bottom-sheet modal form (Arabic, transliteration, translation, count, reference, category chips, "Essential" toggle); add/edit/delete; all stored in `localStorage` under `adhkar:custom`.
-- **Backup & Restore**: New section in Settings.
-  - **Export** → downloads `sakeenah-backup-YYYY-MM-DD_HHmm.json` containing `{custom, favorites, counts, streak, reminders, theme}` with version + app marker.
-  - **Import** → file picker, validates `app=="sakeenah"`, merges custom adhkar (deduped by id), favorites, counts (per-day), streak (max), with success/error feedback.
-- **Bottom nav fix**: Now uses `env(safe-area-inset-bottom)` so it sits above Android gesture-bar / iOS home indicator — no more clipping. Added 4th tab "My Adhkar". Tab labels reduced to fit nicely.
-- **Reactive data**: `getAdhkarForCategory()` merges built-in + user-added adhkar by category. Custom adhkar tagged with category appear inside Morning/Evening/etc. detail pages too.
-- **Favorites**: Now also pulls from custom adhkar.
+## v3 changes (this iteration)
+- **Search** — new `/search` route. Searches Arabic, transliteration, translation & reference across all built-in + custom adhkar. Category label shown above each result. Empty / hint / no-match states.
+- **Share dhikr** — new share-icon button on every AdhkarCard (next to favorite heart). Uses Web Share API (works in Capacitor WebView on Android 12+) for native WhatsApp / Telegram / Messages share. Falls back to clipboard with toast notification when Share API not available. Same Share button on Quran detail.
+- **Quranic verses with audio** — new `/quran` route with 8 curated short surahs (Al-Fatiha, Al-Ikhlas, Al-Falaq, An-Nas, Al-Kafirun, Al-Kawthar, An-Nasr, Al-Asr). Each row has a play/pause button streaming Mishary Alafasy recitation from `server8.mp3quran.net`. Tap row to expand → full Arabic + English translation + Share button.
+- **Tasbih counter** — new `/tasbih` route. Big circular tap target with animated progress ring, presets (33/99/100), session count + lifetime total, haptic feedback toggle (uses `navigator.vibrate`), reset buttons. State persisted in localStorage.
+- **Home tiles** — added 3-column quick-access row above category list: Search · Quran · Tasbih.
+- **Share helper** — new `src/lib/share.ts` with cross-platform `shareText()` + lightweight toast.
 
 ## APK
 - **Download:** https://mobile-apk-gen-5.preview.emergentagent.com/api/download/apk
-- **App ID:** `com.sakeenah.adhkar`
-- **Size:** 4.1 MB · debug build, unsigned
-- **Min Android:** 6.0+
+- **Size:** 4.1 MB · debug · Min Android 6.0+ · App ID `com.sakeenah.adhkar`
 
-## Backup file format
-```json
-{
-  "app": "sakeenah",
-  "version": 1,
-  "exportedAt": "2026-04-26T08:27:00.000Z",
-  "data": {
-    "custom": [{ "id": "...", "arabic": "...", "category": "morning", ... }],
-    "favorites": ["id1", "id2"],
-    "counts": { "2026-04-26": { "id": 5 } },
-    "streak": { "current": 5, "longest": 12, "lastDay": "..." },
-    "reminders": { ... },
-    "theme": "dark"
-  }
-}
-```
+## Verified flows
+- Search "Allah" → 26 results; "subhan" → no matches state ✅
+- Quran row tap expands; Arabic for Al-Ikhlas renders correctly; share button visible ✅
+- Tasbih: 5 taps → count=5, lifetime=5; preset switch resets count ✅
+- Share button on all dhikr cards triggers Web Share API ✅
 
-## Files modified / added
-- `src/lib/storage.ts` — added CustomAdhkar CRUD + exportBackup/downloadBackup/importBackup
-- `src/data/adhkar.ts` — added "custom" category meta + `getAdhkarForCategory()`
-- `src/components/AppShell.tsx` — fixed safe-area-inset, added "My Adhkar" tab
-- `src/routes/custom.tsx` — NEW route, full CRUD UI with bottom-sheet modal
-- `src/routes/settings.tsx` — added Backup & Restore section
-- `src/routes/category.$category.tsx` — merges custom adhkar
-- `src/routes/favorites.tsx` — includes custom favorites
-- `src/routes/index.tsx` — filters "custom" from home category cards (it's a tab now)
+## Files added/modified (v3)
+- `src/data/quran.ts` — NEW (8 surahs metadata + audio URLs)
+- `src/lib/share.ts` — NEW (cross-platform share + toast)
+- `src/routes/search.tsx` — NEW
+- `src/routes/quran.tsx` — NEW
+- `src/routes/tasbih.tsx` — NEW
+- `src/components/AdhkarCard.tsx` — added share button
+- `src/routes/index.tsx` — added quick-access tiles

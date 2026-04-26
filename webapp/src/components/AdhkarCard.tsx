@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, RotateCcw, Star } from "lucide-react";
+import { Heart, RotateCcw, Star, Share2 } from "lucide-react";
 import type { Adhkar } from "@/data/adhkar";
 import { cn } from "@/lib/utils";
 import {
@@ -10,6 +10,7 @@ import {
   toggleFavorite,
   recordActivity,
 } from "@/lib/storage";
+import { shareText } from "@/lib/share";
 
 export function AdhkarCard({
   adhkar,
@@ -55,6 +56,21 @@ export function AdhkarCard({
     setFav(list.includes(adhkar.id));
   };
 
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const text = [
+      adhkar.arabic,
+      adhkar.transliteration,
+      adhkar.translation,
+      `— ${adhkar.reference}`,
+      "",
+      "Shared via Sakeenah Adhkar 🌙",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    shareText({ title: "Dhikr", text });
+  };
+
   return (
     <article
       className={cn(
@@ -78,15 +94,25 @@ export function AdhkarCard({
             </span>
           )}
         </div>
-        <button
-          onClick={handleFav}
-          aria-label={fav ? "Remove favorite" : "Add favorite"}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-smooth hover:bg-muted hover:text-destructive"
-        >
-          <Heart
-            className={cn("h-4 w-4 transition-smooth", fav && "fill-destructive text-destructive")}
-          />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handleShare}
+            aria-label="Share dhikr"
+            data-testid={`share-dhikr-${adhkar.id}`}
+            className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-smooth hover:bg-muted hover:text-foreground"
+          >
+            <Share2 className="h-4 w-4" />
+          </button>
+          <button
+            onClick={handleFav}
+            aria-label={fav ? "Remove favorite" : "Add favorite"}
+            className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-smooth hover:bg-muted hover:text-destructive"
+          >
+            <Heart
+              className={cn("h-4 w-4 transition-smooth", fav && "fill-destructive text-destructive")}
+            />
+          </button>
+        </div>
       </div>
 
       {/* Arabic */}

@@ -9,15 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TasbihRouteImport } from './routes/tasbih'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as QuranRouteImport } from './routes/quran'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CustomRouteImport } from './routes/custom'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
 
+const TasbihRoute = TasbihRouteImport.update({
+  id: '/tasbih',
+  path: '/tasbih',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuranRoute = QuranRouteImport.update({
+  id: '/quran',
+  path: '/quran',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -45,14 +63,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/custom': typeof CustomRoute
   '/favorites': typeof FavoritesRoute
+  '/quran': typeof QuranRoute
+  '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
+  '/tasbih': typeof TasbihRoute
   '/category/$category': typeof CategoryCategoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/custom': typeof CustomRoute
   '/favorites': typeof FavoritesRoute
+  '/quran': typeof QuranRoute
+  '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
+  '/tasbih': typeof TasbihRoute
   '/category/$category': typeof CategoryCategoryRoute
 }
 export interface FileRoutesById {
@@ -60,7 +84,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/custom': typeof CustomRoute
   '/favorites': typeof FavoritesRoute
+  '/quran': typeof QuranRoute
+  '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
+  '/tasbih': typeof TasbihRoute
   '/category/$category': typeof CategoryCategoryRoute
 }
 export interface FileRouteTypes {
@@ -69,16 +96,30 @@ export interface FileRouteTypes {
     | '/'
     | '/custom'
     | '/favorites'
+    | '/quran'
+    | '/search'
     | '/settings'
+    | '/tasbih'
     | '/category/$category'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/custom' | '/favorites' | '/settings' | '/category/$category'
+  to:
+    | '/'
+    | '/custom'
+    | '/favorites'
+    | '/quran'
+    | '/search'
+    | '/settings'
+    | '/tasbih'
+    | '/category/$category'
   id:
     | '__root__'
     | '/'
     | '/custom'
     | '/favorites'
+    | '/quran'
+    | '/search'
     | '/settings'
+    | '/tasbih'
     | '/category/$category'
   fileRoutesById: FileRoutesById
 }
@@ -86,17 +127,41 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CustomRoute: typeof CustomRoute
   FavoritesRoute: typeof FavoritesRoute
+  QuranRoute: typeof QuranRoute
+  SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
+  TasbihRoute: typeof TasbihRoute
   CategoryCategoryRoute: typeof CategoryCategoryRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tasbih': {
+      id: '/tasbih'
+      path: '/tasbih'
+      fullPath: '/tasbih'
+      preLoaderRoute: typeof TasbihRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quran': {
+      id: '/quran'
+      path: '/quran'
+      fullPath: '/quran'
+      preLoaderRoute: typeof QuranRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -134,7 +199,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CustomRoute: CustomRoute,
   FavoritesRoute: FavoritesRoute,
+  QuranRoute: QuranRoute,
+  SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
+  TasbihRoute: TasbihRoute,
   CategoryCategoryRoute: CategoryCategoryRoute,
 }
 export const routeTree = rootRouteImport

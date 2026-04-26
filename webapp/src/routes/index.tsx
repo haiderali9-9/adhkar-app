@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { Search, BookOpen, CircleDot } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
 import { StreakBanner } from "@/components/StreakBanner";
 import { adhkarData, categoryMeta, type AdhkarCategory } from "@/data/adhkar";
@@ -62,6 +63,48 @@ function HomePage() {
       </header>
 
       <StreakBanner current={streak.current} longest={streak.longest} />
+
+      {/* Quick access tiles */}
+      <div className="px-5 pt-5">
+        <div className="grid grid-cols-3 gap-2.5">
+          <Link
+            to="/search"
+            data-testid="home-search-tile"
+            className="group flex flex-col items-center gap-1.5 rounded-2xl border border-border/70 bg-card p-3 transition-smooth hover:border-primary/40 hover:bg-card/80"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-smooth group-hover:bg-primary group-hover:text-primary-foreground">
+              <Search className="h-5 w-5" strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-medium text-foreground">
+              Search
+            </span>
+          </Link>
+          <Link
+            to="/quran"
+            data-testid="home-quran-tile"
+            className="group flex flex-col items-center gap-1.5 rounded-2xl border border-border/70 bg-card p-3 transition-smooth hover:border-primary/40 hover:bg-card/80"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-smooth group-hover:bg-primary group-hover:text-primary-foreground">
+              <BookOpen className="h-5 w-5" strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-medium text-foreground">
+              Quran
+            </span>
+          </Link>
+          <Link
+            to="/tasbih"
+            data-testid="home-tasbih-tile"
+            className="group flex flex-col items-center gap-1.5 rounded-2xl border border-border/70 bg-card p-3 transition-smooth hover:border-primary/40 hover:bg-card/80"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-smooth group-hover:bg-primary group-hover:text-primary-foreground">
+              <CircleDot className="h-5 w-5" strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-medium text-foreground">
+              Tasbih
+            </span>
+          </Link>
+        </div>
+      </div>
 
       <div className="px-5 pt-7">
         <div className="divider-ornament mb-4">
